@@ -41,4 +41,8 @@ smartParking/
 └── src/
     └── main/
         ├── java/
-        │   └── ec/edu/udla/smartparking
+        │   └── controller/   (Puntos de entrada del sistema)
+        │   └── model/        (Clases de dominio: Ticket, Vehiculo, etc.)
+        │   └── repository/   (Estructuras de datos en memoria: TreeSet, HashMaps)
+        │   └── service/      (Lógica de negocio y algoritmos de ordenamiento/búsqueda)
+        │   └── Main.java     (Clase de arranque del sistema)
