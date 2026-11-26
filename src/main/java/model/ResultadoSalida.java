@@ -1,4 +1,8 @@
 package main.java.model;
 
-public class ResultadoSalida {
+public enum ResultadoSalida {
+    AUTORIZADA,
+    TICKET_NO_ENCONTRADO,
+    NO_PAGADO,
+    GRACIA_VENCIDA
 }

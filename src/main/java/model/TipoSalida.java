@@ -1,4 +1,6 @@
 package main.java.model;
 
-public class TipoSalida {
+public enum TipoSalida {
+    NORMAL,
+    MANUAL
 }
