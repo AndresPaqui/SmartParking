@@ -50,3 +50,20 @@ smart-parking/
             ├── model/      # Entidades y enumeraciones (Ticket, Pago, RegistroSalida, ConfiguracionSistema)
             ├── service/    # Lógica de negocio y estructuras (GestorTickets, CalculadoraTarifa, ProcesadorPagos, ControlSalida)
             └── ui/         # Interfaz gráfica en Java Swing
+
+```
+
+## Requisitos e instrucciones de ejecución
+
+**Requisitos**
+- `Java Development Kit (JDK) 17 o superior.`
+- `IDE compatible con proyectos Java (IntelliJ IDEA).`
+
+**Ejecución desde IDE**
+
+1. Clonar repositorio
+ ```text
+git clone <URL_DEL_REPOSITORIO>
+```
+2. Abrir la carpeta del proyecto en el IDE y verificar que la carpeta src/main/java esté marcada como directorio de código fuente (Sources Root).
+3. 
