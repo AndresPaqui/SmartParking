@@ -1,48 +1,52 @@
-# 🚗 smartParking
+# Smart Parking
 
-**smartParking** es un sistema ciberfísico de gestión de recaudo y control de parqueaderos universitarios, diseñado para integrarse como un aditivo tecnológico a las infraestructuras de barreras físicas existentes.
+Aplicación de escritorio en Java (Swing) para la simulación y gestión operativa de un parqueadero universitario. El sistema modela el ciclo de vida de los tickets de estacionamiento en memoria, el pago simulado mediante código QR y el control de salidas con validación de tiempo de gracia.
 
-## ⚠️ El Problema
-Actualmente, el sistema de parqueaderos universitarios sufre de cuellos de botella masivos durante las horas pico. El proceso de pago es presencial, centralizado y secuencial (los usuarios deben caminar hacia una máquina o ventanilla física para pagar su ticket).
+## Contexto y problema
 
-Esto genera largas filas peatonales que exceden el "tiempo de gracia" para salir del parqueadero. Como consecuencia:
-- Los usuarios reciben recargos automáticos injustificados (pago de horas extra).
-- Se genera una severa congestión vehicular (tráfico) en los carriles de salida y vías urbanas aledañas.
-- Ocurren fallos mecánicos frecuentes en las máquinas lectoras de efectivo.
+El parqueadero universitario cuenta con un aforo de 550 espacios y dispone únicamente de 2 máquinas físicas de pago. Durante las horas pico (mediodía y de 17:40 a 19:00), la concentración de usuarios genera colas de entre 3 y 15 minutos, a lo que se suman fallos en la lectura de tickets o pagos con tarjeta.
 
-## 💡 La Solución
-Implementar un ecosistema de *smart parking* descentralizado compuesto por un backend en **Java** y una **Web App responsiva**. La solución permite a los conductores pagar su tarifa de forma remota desde su dispositivo móvil sin necesidad de instalar aplicaciones nativas.
+Esta saturación provoca tres inconvenientes principales:
+- **Vencimiento de la ventana de gracia:** Una vez realizado el pago, el usuario tiene 15 minutos para retirar su vehículo. Las demoras en fila o el traslado hacia el auto hacen que se supere ese límite, generando un recargo automático de $1.00 (una hora adicional).
+- **Congestión vehicular:** La lenta rotación en los puntos de pago retrasa la salida en los carriles internos.
+- **Tickets fantasma:** Cuando una salida ya pagada no queda cerrada en el sistema, el ticket permanece activo y acumula horas de forma indebida.
 
-El sistema utiliza estructuras de datos avanzadas (HashMaps, Queues, Red-Black Trees, PriorityQueues) y algoritmos para procesar pagos de forma concurrente, detectar "autos fantasma", emparejar matrículas en tiempo real para agilizar la salida y generar analítica de ocupación.
+## Solución y alcance técnico
 
-## 👥 Equipo de Desarrollo y Módulos Funcionales
+El proyecto implementa una solución académica en Java con interfaz gráfica Swing y persistencia temporal en memoria (sin bases de datos externas ni pasarelas de pago reales). Los datos iniciales se cargan al iniciar la ejecución para simular distintos escenarios operativos.
 
-El proyecto está dividido en 6 módulos algorítmicos. Cada integrante es responsable del desarrollo técnico de un módulo específico y de sus estructuras de datos subyacentes:
+Estructuras de datos y algoritmos utilizados:
+- `HashMap`: indexación y búsqueda en $O(1)$ promedio de tickets activos por ID, placa y código QR.
+- `ArrayDeque` (Cola FIFO): gestión de solicitudes de pago por QR en orden de llegada y re-encolado ante fallos simulados.
+- `PriorityQueue`: agenda de eventos discretos en el simulador y priorización de tickets antiguos para detección de anomalías.
+- `ArrayList`: almacenamiento secuencial de historiales de tickets retirados, pagos confirmados, registros de salida y auditoría.
+- `Merge Sort`: ordenamiento de reportes por monto, tiempo de permanencia y fecha.
 
-| Integrante | Rol / Responsabilidad | Módulo Asignado |
-| :--- | :--- | :--- |
-| **Kevin Quinatoa** | Desarrollador Backend | **Módulo 1:** Gestión y Procesamiento Estructural de Tickets (`HashMap` y Lógica Tarifaria). |
-| **Jostin Saca** | Desarrollador Backend | **Módulo 2:** Encolamiento y Concurrencia de Pagos (`ConcurrentQueue` para pasarelas). |
-| **Rafaela Ludeña** | Desarrollador Backend | **Módulo 3:** Gestión de Matrículas y Control de Salidas (`TreeSet` para autocompletado rápido). |
-| **Valeria Caceres** | Desarrollador Backend | **Módulo 4:** Detección Algorítmica de Anomalías (`PriorityQueue` / `BST` para tickets fantasma). |
-| **Steven Vaca** | Desarrollador Backend | **Módulo 5:** Analítica de Ocupación y Ordenamiento (`MergeSort` / `QuickSort` para reportes). |
-| **Andrés Paqui** | Líder Integración / Frontend | **Módulo 6:** Enrutamiento de Eventos y Caché de Interfaz (`Stack LIFO` y `LinkedHashMap` - LRU Caché). |
+## Arquitectura modular y equipo
 
-## 📂 Estructura Básica de Carpetas
+El sistema se divide en 6 módulos funcionales:
 
-El proyecto sigue una arquitectura MVC (Modelo-Vista-Controlador) adaptada para el desarrollo de la API REST en Java:
+| Módulo | Descripción | Estructuras / Algoritmos | Integrante asignado |
+| :--- | :--- | :--- | :--- |
+| **M1. Entrada y tickets** | Registro de ingreso, generación de código QR y control de aforo (550 espacios). | `HashMap`, `ArrayList` | Kevin Quinatoa |
+| **M2. Tarifa y parámetros** | Configuración de reglas del sistema ($1/h, 15 min gracia) y cálculo de cobros. | Aritmética con redondeo superior | Jostin Saca |
+| **M3. Pago en línea por QR** | Encolamiento de pagos, simulación de fallos y reintentos (máximo 3). | `Queue` (`ArrayDeque`), `ArrayList` | Rafaela Ludeña |
+| **M4. Control de salida** | Validación de pago y gracia, aplicación de recargos, cierre de ticket y salida manual. | `HashMap`, `ArrayList` | Valeria Caceres |
+| **M5. Simulador de flujo** | Generación de llegadas y salidas mediante eventos discretos con tasas $\lambda$ y $\mu$. | `PriorityQueue` | Steven Vaca |
+| **M6. Reportes y alertas** | Ordenamiento de historiales, corte de caja y detección de tickets rezagados (> 24 h). | `Merge Sort`, `PriorityQueue`, `ArrayList` | Andrés Paqui |
+
+> **Estado actual (Progreso 2):** Implementación funcional de los módulos **M3 (Pago por QR)** y **M4 (Control de salida)** junto con la capa base de datos en memoria de **M1** y **M2**.
+
+## Estructura del proyecto
 
 ```text
-smartParking/
-│
-├── README.md                   # Documentación principal del proyecto
-├── .gitignore                  # Archivos ignorados por el control de versiones
-│
+smart-parking/
+├── README.md
+├── .gitignore
 └── src/
     └── main/
-        ├── java/
-        │   └── controller/   (Puntos de entrada del sistema)
-        │   └── model/        (Clases de dominio: Ticket, Vehiculo, etc.)
-        │   └── repository/   (Estructuras de datos en memoria: TreeSet, HashMaps)
-        │   └── service/      (Lógica de negocio y algoritmos de ordenamiento/búsqueda)
-        │   └── Main.java     (Clase de arranque del sistema)
+        └── java/
+            ├── data/       # Carga de datos iniciales en memoria (DatosIniciales.java)
+            ├── model/      # Entidades y enumeraciones (Ticket, Pago, RegistroSalida, ConfiguracionSistema)
+            ├── service/    # Lógica de negocio y estructuras (GestorTickets, CalculadoraTarifa, ProcesadorPagos, ControlSalida)
+            └── ui/         # Interfaz gráfica en Java Swing
