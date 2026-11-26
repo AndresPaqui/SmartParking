@@ -1,4 +1,8 @@
 package main.java.model;
 
-public class EstadoTicket {
+public enum EstadoTicket {
+    ACTIVO,
+    PAGADO,
+    SALIDO,
+    CERRADO_FORZOSO
 }
